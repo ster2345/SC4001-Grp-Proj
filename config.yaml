@@ -1,0 +1,20 @@
+seed: 42
+drive_root: /content/drive/MyDrive/sc4001_project
+local_root: /content/data
+
+train_generator: sd14
+test_generators: [adm, biggan, midjourney]
+
+samples:
+  train_per_class: 1000
+  val_per_class: 250
+  test_per_class: 500   # per test generator
+
+cleaning:
+  jpeg_quality: 95
+  size: 256
+  resize: center_crop_then_bicubic
+
+clip:
+  model: openai/clip-vit-base-patch32
+  batch_size: 128
