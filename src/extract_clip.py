@@ -71,7 +71,7 @@ def encode(paths):
     dl = DataLoader(DS(paths), batch_size=cfg["clip"]["batch_size"], num_workers=2)
     for x in dl:
         f = model.get_image_features(pixel_values=x.to(dev))
-        if not torch.is_tensor(f):          # newer transformers versions return an object
+        if not torch.is_tensor(f):          
             f = f.pooler_output
         out.append(f.float().cpu().numpy())
     return np.concatenate(out)
@@ -88,7 +88,7 @@ shard_dir.mkdir(parents=True, exist_ok=True)
 parts = []
 for i in tqdm(range(0, len(df), args.shard), desc=args.version):
     sp = shard_dir / f"shard_{i // args.shard:04d}.npy"
-    if not sp.exists():                       # skip shards already done
+    if not sp.exists():                       
         np.save(sp, encode(df[col].iloc[i:i + args.shard].tolist()))
     parts.append(np.load(sp))
 feats = np.concatenate(parts)
