@@ -18,3 +18,9 @@ cleaning:
 clip:
   model: openai/clip-vit-base-patch32
   batch_size: 128
+
+sources:
+  sd14:       {genimage_folder: "Stable Diffusion V1.4", part: train}
+  adm:        {genimage_folder: "ADM", part: val}
+  biggan:     {genimage_folder: "BigGAN", part: val}
+  midjourney: {genimage_folder: "Midjourney", part: val}
