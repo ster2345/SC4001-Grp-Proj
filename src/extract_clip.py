@@ -35,7 +35,7 @@ feat_dir = Path(cfg["drive_root"]) / "features" / "clip_vitb32"
 final = feat_dir / f"{args.version}.npz"
 
 if args.verify:
-    z = np.load(final, allow_pickle=False)
+    z = np.load(final, allow_pickle=True)
     print({k: z[k].shape for k in z.files})
     assert z["feats"].shape == (len(df), 512), z["feats"].shape
     assert np.isfinite(z["feats"]).all(), "NaN/inf in features"
@@ -94,7 +94,8 @@ for i in tqdm(range(0, len(df), args.shard), desc=args.version):
 feats = np.concatenate(parts)
 assert len(feats) == len(df)
 
-np.savez(final, feats=feats, labels=df.label.values, image_ids=df.image_id.values,
-         generators=df.generator.values, sources=df.source.values,
-         splits=df.split.values, paths=df[col].values)
+np.savez(final, feats=feats, labels=df.label.values,
+         image_ids=df.image_id.values.astype(str), generators=df.generator.values.astype(str),
+         sources=df.source.values.astype(str), splits=df.split.values.astype(str),
+         paths=df[col].values.astype(str))
 print("saved", final, feats.shape)
