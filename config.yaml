@@ -24,3 +24,22 @@ sources:
   adm:        {genimage_folder: "ADM", part: val}
   biggan:     {genimage_folder: "BigGAN", part: val}
   midjourney: {genimage_folder: "Midjourney", part: val}
+
+# ---- Member B: model training (all settings for train_clip_probe.py / train_resnet.py) ----
+train:
+  seeds: [42, 43, 44]          # 3 seeds per ResNet run, to measure run-to-run variation
+  results_dir: results         # under drive_root: predictions, checkpoints, experiment log
+
+  clip_probe:
+    C_grid: [0.01, 0.1, 1, 10, 100]   # inverse regularisation strengths tried; best chosen on val
+    max_iter: 5000
+
+  resnet:
+    weights: IMAGENET1K_V2     # torchvision ImageNet-pretrained ResNet-50
+    resize: 256                # shorter side resized to 256, then ...
+    crop: 224                  # ... a 224x224 crop (random for train, centre for val/test)
+    batch_size: 32
+    lr: 0.0001                 # Adam learning rate
+    max_epochs: 10
+    patience: 3                # early stopping on validation loss
+    num_workers: 2

@@ -103,6 +103,34 @@ Frozen CLIP ViT-B/32 (`openai/clip-vit-base-patch32`). Keys in each `.npz`: `fea
 - **2×2 grid:** each detector is trained once on the original data and once on the cleaned data, so the only difference between the two training sets is the cleaning.
 - **Seeds and ablations:** repeated runs with different seeds measure variation, and ablations test the effect of individual choices.
 
+### 5.1 Training commands (Member B)
+
+Easiest: open `notebooks/01_train_models.ipynb` in Colab (T4 GPU) and run all cells. Or, from `/content/repo` after the setup cells:
+
+```
+python src/train_resnet.py --version original --seed 42 --quick --out /content/quick_test   # 1-minute code check
+
+python src/train_clip_probe.py --version original
+python src/train_clip_probe.py --version cleaned
+
+python src/train_resnet.py --version original --seed 42     # repeat for seeds 43, 44
+python src/train_resnet.py --version cleaned  --seed 42     # repeat for seeds 43, 44
+```
+
+All settings are in the `train:` section of `config.yaml`.
+
+- **CLIP probe:** scikit-learn logistic regression on L2-normalised features, trained on `split == "train"`. C is chosen from `C_grid` by validation accuracy (ties: lower validation log loss). Logistic regression has a single optimum, so the probe is deterministic and run once per data version.
+- **ResNet-50:** torchvision ImageNet weights (`IMAGENET1K_V2`), final layer replaced by one output, BCE-with-logits loss, Adam (lr 1e-4), batch 32, at most 10 epochs, early stopping on validation loss (patience 3), best-epoch weights restored. Preprocessing for both versions: resize shorter side to 256, 224 crop (random crop + horizontal flip for training, centre crop for val/test), ImageNet normalisation. Mixed precision on GPU. Seeds 42, 43, 44; cuDNN deterministic mode.
+- **The test set is never used for any choice:** C, the best epoch and early stopping use validation data only. Test images are only scored.
+
+Outputs (in `MyDrive/sc4001_project/results/`):
+
+| File | Contents |
+|---|---|
+| `predictions/<model>_<version>[_seed<s>].csv` | One row per val/test image: `image_id, split, label, generator, source, score, model, data_version, seed`. `score` = predicted probability of **fake**. |
+| `checkpoints/resnet50_<version>_seed<s>.pt` | Best-epoch ResNet-50 weights (not in git) |
+| `experiment_log.csv` | One row per run: settings, best epoch / C, validation accuracy, AUC and loss, minutes |
+
 ## 6. Evaluation and analysis
 
 - **Metrics:** accuracy and AUC, computed per unseen generator (ADM, BigGAN, Midjourney) as described in Section 3.3. Test data is never used for tuning.
@@ -179,8 +207,12 @@ src/
   check_splits.py               proves no file appears in two splits
   clean_images.py               bias-controlled version of the data
   extract_clip.py               frozen CLIP features
-  (model training and evaluation code added by Members B and C)
+  train_utils.py                shared helpers: prediction files, experiment log
+  train_clip_probe.py           CLIP linear probe (Member B)
+  train_resnet.py               ResNet-50 fine-tuning (Member B)
+  (evaluation code added by Member C)
 notebooks/00_setup_colab.ipynb  startup notebook
+notebooks/01_train_models.ipynb Member B: runs all training
 ```
 
 ## 9. Work split
