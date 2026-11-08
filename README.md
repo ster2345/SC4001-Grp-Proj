@@ -119,6 +119,12 @@ python src/train_resnet.py --version cleaned  --seed 42     # repeat for seeds 4
 
 All settings are in the `train:` section of `config.yaml`.
 
+**Ablations** change one setting and save under a separate name with `--tag`, so the main results are never overwritten (the script refuses `--max-epochs` without `--tag`). Epoch ablation (notebook cell 8):
+
+```
+python src/train_resnet.py --version cleaned --seed 42 --max-epochs 15 --tag ep15   # -> resnet50_cleaned_seed42_ep15.*
+```
+
 - **CLIP probe:** scikit-learn logistic regression on L2-normalised features, trained on `split == "train"`. C is chosen from `C_grid` by validation accuracy (ties: lower validation log loss). Logistic regression has a single optimum, so the probe is deterministic and run once per data version.
 - **ResNet-50:** torchvision ImageNet weights (`IMAGENET1K_V2`), final layer replaced by one output, BCE-with-logits loss, Adam (lr 1e-4), batch 32, at most 10 epochs, early stopping on validation loss (patience 3), best-epoch weights restored. Preprocessing for both versions: resize shorter side to 256, 224 crop (random crop + horizontal flip for training, centre crop for val/test), ImageNet normalisation. Mixed precision on GPU. Seeds 42, 43, 44; cuDNN deterministic mode.
 - **The test set is never used for any choice:** C, the best epoch and early stopping use validation data only. Test images are only scored.

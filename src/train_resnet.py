@@ -21,6 +21,9 @@ Usage (from /content/repo, on a T4 GPU runtime, after the setup cells):
   python src/train_resnet.py --version cleaned  --seed 42
   (repeat with --seed 43 and --seed 44)
   python src/train_resnet.py --version original --seed 42 --quick   # 64 images, 1 epoch: code check
+
+Ablation example (saved as resnet50_cleaned_seed42_ep15.*, main results untouched):
+  python src/train_resnet.py --version cleaned --seed 42 --max-epochs 15 --tag ep15
 """
 import argparse
 import copy
@@ -46,6 +49,11 @@ ap.add_argument("--root", default="/content/data")
 ap.add_argument("--csv", default="splits/splits.csv")
 ap.add_argument("--out", default=None, help="override results folder (for testing)")
 ap.add_argument("--quick", action="store_true", help="tiny run to check the code works")
+# Ablations: change ONE setting and save under a separate name, so main results are never overwritten.
+ap.add_argument("--max-epochs", type=int, default=None,
+                help="ablation: override max_epochs from config.yaml (e.g. 15)")
+ap.add_argument("--tag", default="",
+                help="ablation: label added to output file names, e.g. ep15 -> resnet50_cleaned_seed42_ep15.csv")
 ap.add_argument("--no-pretrained", action="store_true", help="random init (offline testing only)")
 args = ap.parse_args()
 
@@ -53,7 +61,11 @@ cfg = load_config()
 rcfg = cfg["train"]["resnet"]
 out_dir = results_dir(cfg, args.out)
 dev = "cuda" if torch.cuda.is_available() else "cpu"
-run_name = f"resnet50_{args.version}_seed{args.seed}" + ("_quick" if args.quick else "")
+if args.max_epochs is not None and not args.tag:
+    raise SystemExit("ablation runs need --tag (e.g. --tag ep15) so they don't overwrite the main results")
+run_name = (f"resnet50_{args.version}_seed{args.seed}"
+            + (f"_{args.tag}" if args.tag else "")
+            + ("_quick" if args.quick else ""))
 
 
 # ---- reproducibility: fix every random number generator ---------------------------------
@@ -134,7 +146,7 @@ def predict(dl):
 
 # ---- training loop with early stopping on validation loss --------------------------------
 t0 = time.time()
-max_epochs = 1 if args.quick else rcfg["max_epochs"]
+max_epochs = 1 if args.quick else (args.max_epochs or rcfg["max_epochs"])
 best_loss, best_state, best_epoch, wait, best_m = float("inf"), None, 0, 0, None
 for epoch in range(1, max_epochs + 1):
     model.train()
@@ -173,8 +185,9 @@ scores = predict(eval_dl)
 pred_path = out_dir / "predictions" / f"{run_name}.csv"
 save_predictions(eval_rows, scores, pred_path, "resnet50", args.version, args.seed)
 log_run(out_dir / "experiment_log.csv", {
-    "model": "resnet50" + ("_quick" if args.quick else ""), "data_version": args.version,
-    "seed": args.seed, "setting": f"lr={rcfg['lr']},bs={rcfg['batch_size']}",
+    "model": "resnet50" + (f"_{args.tag}" if args.tag else "") + ("_quick" if args.quick else ""),
+    "data_version": args.version, "seed": args.seed,
+    "setting": f"lr={rcfg['lr']},bs={rcfg['batch_size']},max_epochs={max_epochs}",
     "best_epoch": best_epoch, "val_acc": round(best_m["val_acc"], 4),
     "val_auc": round(best_m["val_auc"], 4), "val_loss": round(best_m["val_loss"], 4),
     "minutes": round((time.time() - t0) / 60, 2), "predictions": pred_path.name,
