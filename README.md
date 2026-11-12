@@ -139,6 +139,8 @@ Outputs (in `MyDrive/sc4001_project/results/`):
 
 ## 6. Evaluation and analysis
 
+Evaluation and robustness experiments are implemented in `notebooks/02_evaluation_robustness.ipynb`. The resulting prediction files are saved under `results/predictions/robustness/`, evaluation tables under `results/metrics/`, and figures under `results/figures/` in the shared Google Drive.
+
 - **Metrics:** accuracy and AUC, computed per unseen generator (ADM, BigGAN, Midjourney) as described in Section 3.3. Test data is never used for tuning.
 - **Cross-generator results table:** detector × data version × generator.
 - **Robustness:** a pipeline that applies JPEG compression and resizing to test images, and compares the drop in performance for each detector and data version.
@@ -216,9 +218,9 @@ src/
   train_utils.py                shared helpers: prediction files, experiment log
   train_clip_probe.py           CLIP linear probe (Member B)
   train_resnet.py               ResNet-50 fine-tuning (Member B)
-  (evaluation code added by Member C)
 notebooks/00_setup_colab.ipynb  startup notebook
 notebooks/01_train_models.ipynb Member B: runs all training
+notebooks/02_evaluation_robustness.ipynb  Member C: evaluation, robustness testing, plots and failure analysis
 ```
 
 ## 9. Work split
