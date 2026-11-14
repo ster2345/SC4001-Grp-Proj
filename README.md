@@ -145,6 +145,11 @@ Evaluation and robustness experiments are implemented in `notebooks/02_evaluatio
 - **Cross-generator results table:** detector × data version × generator.
 - **Robustness:** a pipeline that applies JPEG compression and resizing to test images, and compares the drop in performance for each detector and data version.
 - **Analysis:** plots, failure cases with example images, and a discussion of why the results came out as they did.
+- **Score breakdown (Member B):** for each model, data version, test condition and generator, the share of real and fake images labelled fake, their mean scores and the AUC. It explains the settings with AUC below 0.5. No training or GPU needed; it reads the existing prediction files and writes `results/metrics/score_breakdown.csv`:
+
+  ```
+  python src/score_breakdown.py
+  ```
 
 ## 7. Rebuilding the data from scratch
 
@@ -218,6 +223,7 @@ src/
   train_utils.py                shared helpers: prediction files, experiment log
   train_clip_probe.py           CLIP linear probe (Member B)
   train_resnet.py               ResNet-50 fine-tuning (Member B)
+  score_breakdown.py            per-generator score breakdown, explains AUC < 0.5 (Member B)
 notebooks/00_setup_colab.ipynb  startup notebook
 notebooks/01_train_models.ipynb Member B: runs all training
 notebooks/02_evaluation_robustness.ipynb  Member C: evaluation, robustness testing, plots and failure analysis
