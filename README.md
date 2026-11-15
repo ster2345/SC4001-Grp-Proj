@@ -21,7 +21,7 @@ Versions used: torch 2.11.0 (CUDA 13.0), transformers 5.20.2, pillow 11.3.0, num
 ### 3.1 One-time setup (each person)
 
 1. In Google Drive, add a shortcut to the shared **SC4001 Project** folder in My Drive and rename it exactly `sc4001_project`.
-2. Open `notebooks/01_train_models.ipynb` (training) or `notebooks/02_evaluation_robustness.ipynb` (evaluation) in Colab and **save your own copy to your Drive**. Do not co-edit one shared notebook.
+2. Open `notebooks/01_train_models.ipynb` (training) and `notebooks/02_evaluation_robustness.ipynb` (evaluation) in Colab and **save your own copy to your Drive**. Do not co-edit one shared notebook.
 3. Optional, only for rebuilding data: add a shortcut to the GenImage Drive folder (https://drive.google.com/drive/folders/1jGt10bwTbhEZuGXLyvrCuxOI0cBqQ1FS) and name it `GenImage_src`.
 
 ### 3.2 Every session
@@ -214,6 +214,7 @@ requirements.txt
 splits/splits.csv               FROZEN train/val/test split
 src/
   common.py                     config loading, seed, image listing
+  extract_subset.py             sample images from a single .zip or .tar archive (not used for final data) 
   extract_subset_7z.py          sample images from the GenImage archives
   inspect_data.py               format / size / JPEG quantisation statistics
   dedupe_and_split.py           hash files, build splits.csv (run once)
@@ -231,7 +232,7 @@ The original startup notebook (Member A) was merged into the first cells of both
 
 ## 9. Work split
 
-- **Esther** data download and sampling, splits, bias-controlled data, CLIP features, dataset statistics, README.
+- **Esther:** data download and sampling, splits, bias-controlled data, CLIP features, dataset statistics, README.
 - **Jing Ni:** ResNet-50 and CLIP linear-probe training, seeds, checkpoints, the 2×2 grid, ablations.
 - **Nicole:** metrics, cross-generator tables, JPEG/resize robustness tests, plots, failure analysis.
 - **All:** AI Use Statement, reading and editing the whole report.
