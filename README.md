@@ -21,18 +21,18 @@ Versions used: torch 2.11.0 (CUDA 13.0), transformers 5.20.2, pillow 11.3.0, num
 ### 3.1 One-time setup (each person)
 
 1. In Google Drive, add a shortcut to the shared **SC4001 Project** folder in My Drive and rename it exactly `sc4001_project`.
-2. Open `notebooks/00_setup_colab.ipynb` and **save your own copy to your Drive**. Do not co-edit one shared notebook.
+2. Open `notebooks/01_train_models.ipynb` (training) or `notebooks/02_evaluation_robustness.ipynb` (evaluation) in Colab and **save your own copy to your Drive**. Do not co-edit one shared notebook.
 3. Optional, only for rebuilding data: add a shortcut to the GenImage Drive folder (https://drive.google.com/drive/folders/1jGt10bwTbhEZuGXLyvrCuxOI0cBqQ1FS) and name it `GenImage_src`.
 
 ### 3.2 Every session
 
 1. Set the runtime to **T4 GPU** (Runtime, Change runtime type) if you will extract features or train.
-2. Run the notebook's startup cells top to bottom:
-   - mount Drive, clone or pull the repo, `pip install -r requirements.txt`
-   - unpack `raw_downloads/original_subset.tar` to `/content/data/original`
-   - unpack `raw_downloads/cleaned_subset.tar` to `/content/data/cleaned`
-   - check that both folders contain **5,500** files and that `splits/splits.csv` exists
-3. `git pull` before working.
+2. Each notebook starts with its own setup cells. Run them top to bottom in the notebook you are using:
+   - both: mount Drive, clone or pull the repo, `pip install -r requirements.txt`
+   - both: unpack `raw_downloads/original_subset.tar` to `/content/data/original` and `raw_downloads/cleaned_subset.tar` to `/content/data/cleaned`
+   - `01_train_models.ipynb` only: check the GPU
+   - `02_evaluation_robustness.ipynb` only: check that both folders contain **5,500** files and that `splits/splits.csv` exists
+3. Run `01_train_models.ipynb` before `02_evaluation_robustness.ipynb`, because evaluation reads the predictions and checkpoints that training saves to Drive.
 
 Colab's `/content` is wiped when the session ends. Drive is the permanent copy, so save features, checkpoints and result tables to Drive.
 
@@ -221,13 +221,13 @@ src/
   clean_images.py               bias-controlled version of the data
   extract_clip.py               frozen CLIP features
   train_utils.py                shared helpers: prediction files, experiment log
-  train_clip_probe.py           CLIP linear probe (Member B)
-  train_resnet.py               ResNet-50 fine-tuning (Member B)
-  score_breakdown.py            per-generator score breakdown, explains AUC < 0.5 (Member B)
-notebooks/00_setup_colab.ipynb  startup notebook
-notebooks/01_train_models.ipynb Member B: runs all training
-notebooks/02_evaluation_robustness.ipynb  Member C: evaluation, robustness testing, plots and failure analysis
+  train_clip_probe.py           CLIP linear probe 
+  train_resnet.py               ResNet-50 fine-tuning 
+  score_breakdown.py            per-generator score breakdown, explains AUC < 0.5 
+notebooks/01_train_models.ipynb setup cells: mount, clone, unpack data (Member A); all training (Member B)
+notebooks/02_evaluation_robustness.ipynb  setup cells and dataset statistics (Member A); evaluation, robustness testing, plots and failure analysis (Member C)
 ```
+The original startup notebook (Member A) was merged into the first cells of both notebooks, so there is no separate setup notebook.
 
 ## 9. Work split
 
