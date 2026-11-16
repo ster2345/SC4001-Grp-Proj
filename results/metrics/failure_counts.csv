@@ -1,0 +1,7 @@
+model,source,Correct,False Negative,False Positive
+CLIP,adm,506,470,24
+CLIP,biggan,487,493,20
+CLIP,midjourney,873,104,23
+ResNet-50,adm,490,497,13
+ResNet-50,biggan,500,487,13
+ResNet-50,midjourney,736,249,15

@@ -1,0 +1,13 @@
+Model,Training Data,Generator,Accuracy,AUC,Runs
+clip_probe,cleaned,adm,0.53,0.570732,1
+clip_probe,cleaned,biggan,0.452,0.439704,1
+clip_probe,cleaned,midjourney,0.826,0.919732,1
+clip_probe,original,adm,0.561,0.6457040000000001,1
+clip_probe,original,biggan,0.528,0.667084,1
+clip_probe,original,midjourney,0.88,0.95134,1
+resnet50,cleaned,adm,0.49466666666666664,0.4861546666666667,3
+resnet50,cleaned,biggan,0.4696666666666667,0.48806733333333335,3
+resnet50,cleaned,midjourney,0.6773333333333333,0.7800833333333334,3
+resnet50,original,adm,0.5113333333333333,0.519634,3
+resnet50,original,biggan,0.5166666666666667,0.6681699999999999,3
+resnet50,original,midjourney,0.7793333333333333,0.8710013333333334,3
